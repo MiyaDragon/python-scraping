@@ -25,3 +25,7 @@ class Salesforce:
     def login(self) -> None:
         salesforce_login = SalesforceLogin(self.driver)
         self.driver = salesforce_login.login(self.login_info)
+    
+    def logout(self) -> None:
+        # ログアウトを実行
+        self.driver.get(const.SALESFORCE_LOGOUT_URL)

@@ -10,15 +10,22 @@ class SalesforceJobSeekerRecord(Salesforce):
 
     # メイン処理
     def store(self, applicant_data: dict) -> None:
-        
-        for staff_data in applicant_data.values():
-            # クライアントページへ遷移
-            self.driver.get(const.SALESFORCE_JOB_SEEKER_MANAGE_URL)
-            time.sleep(10)
+        try:
+            for staff_data in applicant_data.values():
+                # クライアントページへ遷移
+                self.driver.get(const.SALESFORCE_JOB_SEEKER_MANAGE_URL)
+                time.sleep(10)
 
-            # 求職者レコード登録処理
-            self.store_staff_data(staff_data)
-
+                # 求職者レコード登録処理
+                self.store_staff_data(staff_data)
+        except Exception as e:
+            print("要素が見つからないか、タイムアウトしました:", e)
+        finally:
+            # ログアウト
+            self.logout()
+            # WebDriverを終了する
+            self.driver.quit()
+            
     # 求職者レコード登録
     def store_staff_data(self, staff_data) -> None:
         # 新規ボタンクリック
