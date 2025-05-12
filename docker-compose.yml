@@ -1,17 +1,23 @@
 services:
-    selenium:               # selenium container
-        image: selenium/standalone-chrome:latest # docker hubのselenium公式イメージ
-        shm_size: 2gb         # ホストとメモリを共有するために設定
-        ports:
-            - 4444:4444         # selenium sever port
-            - 7900:7900         # 実行中のChromeを確認するVNC用port
+  selenium:
+    image: selenium/standalone-chrome:latest
+    container_name: selenium-chrome
+    shm_size: 2gb
+    ports:
+      - "4444:4444"
+      - "7900:7900"
 
-    python:                 # python container
-        build: .   # python3のbuild contextを指定
-        env_file:
-            - .env
-        volumes: 
-            - ./work:/work      # ローカルの"./work"とコンテナの"/work"をバインド
-        tty: true             # ターミナル入力を受け付ける
-        depends_on:           # seleniumコンテナの後で起動させるように指定
-            - selenium
+  python:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: python-scraping
+    env_file:
+      - .env
+    volumes:
+      - ./work:/work
+      - ./credentials.json:/work/credentials.json:ro
+      - ./.env:/work/.env:ro 
+    depends_on:
+      - selenium
+    tty: true

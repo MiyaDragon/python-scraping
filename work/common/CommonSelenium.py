@@ -1,65 +1,83 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 class CommonSelenium:
+    TIMEOUT = 30  # 最大待機時間（秒）
 
     @staticmethod
     def get_element(tag_name: str, text_name: str, driver):
-        # XPathを使用して特定のタグかつ特定のテキストを含む要素を取得する
-        xpath_expression = f"//{tag_name}[contains(text(), '{text_name}')]"
-        element = driver.find_element(By.XPATH, xpath_expression)
-        return element
+        xpath = f"//{tag_name}[contains(text(), '{text_name}')]"
+        try:
+            return WebDriverWait(driver, CommonSelenium.TIMEOUT).until(
+                EC.presence_of_element_located((By.XPATH, xpath))
+            )
+        except TimeoutException:
+            print(f"要素が見つかりません: {xpath}")
+            return None
 
     @staticmethod
     def get_elements(tag_name: str, text_name: str, driver):
-        # XPathを使用して特定のタグかつ特定のテキストを含む要素を取得する
-        xpath_expression = f"//{tag_name}[contains(text(), '{text_name}')]"
-        elements = driver.find_elements(By.XPATH, xpath_expression)
-        return elements
-    
+        xpath = f"//{tag_name}[contains(text(), '{text_name}')]"
+        return driver.find_elements(By.XPATH, xpath)
+
     @staticmethod
     def get_element_by_attr(attr: str, attr_value: str, driver):
-        match attr:
-            case 'id':
-                return driver.find_element(By.ID, attr_value)
-            case 'class':
-                return driver.find_element(By.CLASS_NAME, attr_value)
-            case 'name':
-                return driver.find_element(By.NAME, attr_value)
-            case 'tag':
-                return driver.find_element(By.TAG_NAME, attr_value)
-            case 'xpath':
-                return driver.find_element(By.XPATH, attr_value)
-            case _:
-                return print('第一引数に誤った値が設定されています。')
-    
+        by_map = {
+            'id': By.ID,
+            'class': By.CLASS_NAME,
+            'name': By.NAME,
+            'tag': By.TAG_NAME,
+            'xpath': By.XPATH,
+        }
+        by = by_map.get(attr)
+        if not by:
+            print('第一引数に誤った値が設定されています。')
+            return None
+        try:
+            return WebDriverWait(driver, CommonSelenium.TIMEOUT).until(
+                EC.presence_of_element_located((by, attr_value))
+            )
+        except TimeoutException:
+            print(f"要素が見つかりません: {attr}={attr_value}")
+            return None
+
     @staticmethod
     def get_elements_by_attr(attr: str, attr_value: str, driver):
-        match attr:
-            case 'id':
-                return driver.find_elements(By.ID, attr_value)
-            case 'class':
-                return driver.find_elements(By.CLASS_NAME, attr_value)
-            case 'name':
-                return driver.find_elements(By.NAME, attr_value)
-            case 'tag':
-                return driver.find_elements(By.TAG_NAME, attr_value)
-            case 'xpath':
-                return driver.find_elements(By.XPATH, attr_value)
-            case _:
-                return print('第一引数に誤った値が設定されています。')
+        by_map = {
+            'id': By.ID,
+            'class': By.CLASS_NAME,
+            'name': By.NAME,
+            'tag': By.TAG_NAME,
+            'xpath': By.XPATH,
+        }
+        by = by_map.get(attr)
+        if not by:
+            print('第一引数に誤った値が設定されています。')
+            return []
+        return driver.find_elements(by, attr_value)
 
     @staticmethod
     def get_element_by_xpath(tag: str, attr: str, attr_value: str, driver):
-        return driver.find_element(By.XPATH, f"//{tag}[@{attr}='{attr_value}']")
-    
+        xpath = f"//{tag}[@{attr}='{attr_value}']"
+        try:
+            return WebDriverWait(driver, CommonSelenium.TIMEOUT).until(
+                EC.presence_of_element_located((By.XPATH, xpath))
+            )
+        except TimeoutException:
+            print(f"要素が見つかりません: {xpath}")
+            return None
+
     @staticmethod
     def get_elements_by_xpath(tag: str, attr: str, attr_value: str, driver):
-        return driver.find_elements(By.XPATH, f"//{tag}[@{attr}='{attr_value}']")
-    
+        xpath = f"//{tag}[@{attr}='{attr_value}']"
+        return driver.find_elements(By.XPATH, xpath)
+
     @staticmethod
     def get_next_element(target_element):
         return target_element.find_element(By.XPATH, './following-sibling::*')
-    
+
     @staticmethod
     def get_prev_element(target_element):
         return target_element.find_element(By.XPATH, './preceding-sibling::*')
@@ -70,24 +88,11 @@ class CommonSelenium:
 
     @staticmethod
     def get_text_split_single_unit(text, delimiter, index):
-        splited_text = text.split(delimiter)
-        return splited_text[index]
-    
+        return text.split(delimiter)[index]
+
     @staticmethod
     def get_prefecture(address: str):
-        prefecture_list = ['都', '道', '府', '県']
-
-        result = address
-
-        for prefecture in prefecture_list:
-            # 住所内にprefectureが存在しない場合はスキップ
-            if prefecture not in address:
-                continue
-
-            # 特定の文字が最初に現れるインデックスを取得
-            index = address.index(prefecture)
-            if index > 1:
-                result = address[:index+1]
-                break
-        
-        return result
+        for suffix in ['都', '道', '府', '県']:
+            if suffix in address:
+                return address[:address.index(suffix)+1]
+        return address

@@ -1,15 +1,25 @@
-FROM python:latest
-RUN apt-get update && \
-    apt-get install -y \
-    build-essential \
-    cmake \
-    git \
-    sudo \
+FROM python:3.10-slim
+
+# 必要なパッケージのインストール（cron含む）
+RUN apt-get update && apt-get install -y \
+    cron \
+    procps \
+    vim \
     wget \
-    vim
-RUN pip install --upgrade pip
-COPY requirements.txt /requirements.txt
-COPY credentials.json /credentials.json
-RUN pip install -r /requirements.txt
+    sudo \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# 作業ディレクトリ
 WORKDIR /work
-CMD ["/bin/bash"] 
+
+# Pythonパッケージのインストール
+COPY requirements.txt ./
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+
+# 実行スクリプトをコピー
+COPY docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
+# CMD: start.sh で cron + tail を起動
+CMD ["/start.sh"]

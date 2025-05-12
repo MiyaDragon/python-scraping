@@ -114,7 +114,7 @@ class SpreadSheet():
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
         # 認証情報の読み込み
-        credentials = ServiceAccountCredentials.from_json_keyfile_name("../credentials.json", scope)
+        credentials = ServiceAccountCredentials.from_json_keyfile_name("/work/credentials.json", scope)
 
         # 認証してクライアント作成
         client = gspread.authorize(credentials)
