@@ -64,8 +64,30 @@ class SalesforceJobSeekerRecord(Salesforce):
         ## メール
         if staff_data['email'] is not None:
             self.input_text('PersonEmail', staff_data['email'])
-        ## TODO: なぜか一番最後に入力したtextboxの値が消えるため、空文字を入力している
-        self.input_text('PersonMobilePhone', '')
+        ## 電話番号
+        if staff_data['phone'] is not None:
+            self.input_text('PersonMobilePhone', staff_data['phone'])
+        ## 性別
+        if staff_data['gender'] is not None:
+            gender_element = CommonSelenium.get_element('label', '性別', self.driver)
+            gender_box_id_name = gender_element.get_attribute('for')
+            target_element = CommonSelenium.get_element_by_xpath('button', 'id', gender_box_id_name, self.driver)
+            time.sleep(5)
+            CommonSelenium.target_click(self.driver, target_element)
+            time.sleep(5)
+            id_number = gender_box_id_name.split('-')[-1]
+            gender_number = '1' if staff_data['gender'] == '男性' else '2'
+            gender_id_name = f'{gender_box_id_name}-{gender_number}-{id_number}'
+            gender_element = CommonSelenium.get_element_by_xpath('lightning-base-combobox-item', 'id', gender_id_name, self.driver)
+            time.sleep(5)
+            CommonSelenium.target_click(self.driver, gender_element)
+            time.sleep(5)
+        ## 住所
+        if staff_data['address'] is not None:
+            self.input_text('country', '日本')
+            self.input_text('province', staff_data['prefecture'])
+            after_prefecture = CommonSelenium.get_after_prefecture(staff_data['address'])
+            self.input_text('city', after_prefecture)
         # 保存ボタンクリック
         save_btn = self.driver.find_element(By.XPATH, "//button[@name='SaveEdit']")
         CommonSelenium.target_click(self.driver, save_btn)

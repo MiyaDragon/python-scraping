@@ -96,3 +96,10 @@ class CommonSelenium:
             if suffix in address:
                 return address[:address.index(suffix)+1]
         return address
+    
+    @staticmethod
+    def get_after_prefecture(address: str):
+        for suffix in ['都', '道', '府', '県']:
+            if suffix in address:
+                return address[address.index(suffix)+1:]
+        return address

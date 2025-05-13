@@ -138,6 +138,14 @@ class Engage(Media):
         entry_date = CommonSelenium.get_text_split_single_unit(entry_date_element.text, '\n', 0)
         formated_entry_date = CommonFormat.convert_to_datetime(entry_date[:-1], '%Y年%m月%d日')
         applicant_data['entry_date'] = formated_entry_date.strftime('%Y/%m/%d')
+        ## 住所
+        target_element = CommonSelenium.get_element('div', '現住所', self.driver)
+        address_element = CommonSelenium.get_next_element(target_element)
+        applicant_data['address'] = address_element.text
+        ## 電話番号
+        target_element = CommonSelenium.get_element('div', '電話番号', self.driver)
+        phone_element = CommonSelenium.get_next_element(target_element)
+        applicant_data['phone'] = phone_element.text
         ## メール
         target_element = CommonSelenium.get_element('div', 'メールアドレス', self.driver)
         email_element = CommonSelenium.get_next_element(target_element)
