@@ -1,4 +1,5 @@
 from common.CommonSelenium import CommonSelenium
+from messages.SuccessMessage import SuccessMessage
 
 class MediaLogin:
     def __init__(self, driver):
@@ -19,5 +20,8 @@ class MediaLogin:
         # ログインボタンをクリック
         login_btn = CommonSelenium.get_element_by_attr(login_info['login_btn_attr']['attr'], login_info['login_btn_attr']['attr_value'], self.driver)
         login_btn.click()
+
+        # ログイン成功メッセージを出力
+        print(SuccessMessage.LOGIN_SUCCESS)
 
         return self.driver

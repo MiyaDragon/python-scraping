@@ -1,5 +1,6 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from messages.SuccessMessage import SuccessMessage
 import time
 import pyotp
 
@@ -37,5 +38,8 @@ class SalesforceLogin:
 
         # ログインが成功するまで待機
         time.sleep(5)
+
+        # ログイン成功メッセージを出力
+        print(SuccessMessage.LOGIN_SUCCESS)
 
         return self.driver

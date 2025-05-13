@@ -4,7 +4,7 @@ import driver
 
 class Media(ABC):
     def __init__(self):
-        print(f"{self.media_name}の処理を開始します。")
+        print(f"[INFO] {self.media_name}の処理を開始します。")
         self.driver = driver.getDriver()
         # 暗黙的な待機を設定
         self.driver.implicitly_wait(10)

@@ -4,6 +4,9 @@ from selenium.webdriver.common.keys import Keys
 from common.CommonSelenium import CommonSelenium
 import time
 import const
+from messages.SuccessMessage import SuccessMessage
+from messages.ErrorMessage import ErrorMessage
+from notification.SlackNotification import SlackNotification
 
 class SalesforceJobSeekerRecord(Salesforce):
     """ Salesforce 求職者レコードに関するクラス """
@@ -14,12 +17,19 @@ class SalesforceJobSeekerRecord(Salesforce):
             for staff_data in applicant_data.values():
                 # クライアントページへ遷移
                 self.driver.get(const.SALESFORCE_JOB_SEEKER_MANAGE_URL)
-                time.sleep(10)
+                time.sleep(5)
 
                 # 求職者レコード登録処理
                 self.store_staff_data(staff_data)
+
+                # 求職者レコード登録完了メッセージを出力
+                print(SuccessMessage.STORE_JOB_SEEKER_RECORD_SUCCESS)
         except Exception as e:
-            print("要素が見つからないか、タイムアウトしました:", e)
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND_OR_TIMEOUT, e)
+            # Slackにエラーメッセージを送信
+            SlackNotification.send_message(msg, mention="<!channel>")
+            # エラーメッセージを出力
+            print(msg)
         finally:
             # ログアウト
             self.logout()

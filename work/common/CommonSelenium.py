@@ -2,6 +2,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from messages.ErrorMessage import ErrorMessage
+from notification.SlackNotification import SlackNotification
 
 class CommonSelenium:
     TIMEOUT = 30  # 最大待機時間（秒）
@@ -14,7 +16,9 @@ class CommonSelenium:
                 EC.presence_of_element_located((By.XPATH, xpath))
             )
         except TimeoutException:
-            print(f"要素が見つかりません: {xpath}")
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND, xpath)
+            SlackNotification.send_message(msg, mention="<!channel>")
+            print(msg)
             return None
 
     @staticmethod
@@ -33,14 +37,16 @@ class CommonSelenium:
         }
         by = by_map.get(attr)
         if not by:
-            print('第一引数に誤った値が設定されています。')
+            print(ErrorMessage.INVALID_ATTRIBUTE)
             return None
         try:
             return WebDriverWait(driver, CommonSelenium.TIMEOUT).until(
                 EC.presence_of_element_located((by, attr_value))
             )
         except TimeoutException:
-            print(f"要素が見つかりません: {attr}={attr_value}")
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND, f"{attr}={attr_value}")
+            print(msg)
+            SlackNotification.send_message(msg, mention="<!channel>")
             return None
 
     @staticmethod
@@ -54,7 +60,7 @@ class CommonSelenium:
         }
         by = by_map.get(attr)
         if not by:
-            print('第一引数に誤った値が設定されています。')
+            print(ErrorMessage.INVALID_ATTRIBUTE)
             return []
         return driver.find_elements(by, attr_value)
 
@@ -66,7 +72,9 @@ class CommonSelenium:
                 EC.presence_of_element_located((By.XPATH, xpath))
             )
         except TimeoutException:
-            print(f"要素が見つかりません: {xpath}")
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND, xpath)
+            SlackNotification.send_message(msg, mention="<!channel>")
+            print(msg)
             return None
 
     @staticmethod

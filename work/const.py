@@ -57,3 +57,7 @@ SPREAD_SHEET_ID = os.getenv("SPREAD_SHEET_ID")
 SPREAD_SHEET_WORKSHEET_NAME="【採用】候補者管理"
 # 選考基準：年齢
 SPREAD_SHEET_AGE_LIMIT = os.getenv("SPREAD_SHEET_AGE_LIMIT")
+
+## Slack
+# Slack Webhook URL
+SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")

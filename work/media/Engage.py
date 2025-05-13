@@ -5,6 +5,9 @@ import const
 from login.MediaLogin import MediaLogin
 from common.CommonSelenium import CommonSelenium
 from common.CommonFormat import CommonFormat
+from messages.ErrorMessage import ErrorMessage
+from messages.SuccessMessage import SuccessMessage
+from notification.SlackNotification import SlackNotification
 
 class Engage(Media):
     """ 求人媒体engageに関するクラス """
@@ -66,10 +69,16 @@ class Engage(Media):
                 # モーダルが表示されている場合削除
                 self.close_modal('md_drawer--show')
                 time.sleep(3)
-
+            
+            # 応募者情報取得成功メッセージを出力
+            print(SuccessMessage.GET_APPLICANT_DATA_SUCCESS)
             return applicant_data
         except Exception as e:
-            print("要素が見つからないか、タイムアウトしました:", e)
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND, e)
+            # Slackにエラーメッセージを送信
+            SlackNotification.send_message(msg, mention="<!channel>")
+            # エラーメッセージを出力
+            print(msg)
         finally:
             # ログアウト
             self.logout()
@@ -123,7 +132,6 @@ class Engage(Media):
     def get_applicant_info(self) -> dict:
 
         applicant_data = {}
-        entry_history_data = {}
 
         ## 名前
         name_element = CommonSelenium.get_element_by_xpath('div', 'class', 'name', self.driver)
@@ -180,6 +188,8 @@ class Engage(Media):
     def logout(self) -> None:
         # ログアウトを実行
         self.driver.get(const.ENGAGE_LOGOUT_URL)
+        # ログアウト成功メッセージを出力
+        print(SuccessMessage.LOGOUT_SUCCESS)
     
     # モーダル削除
     def close_modal(self, target_class_name: str) -> None:

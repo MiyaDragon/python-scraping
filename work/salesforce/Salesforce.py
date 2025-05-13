@@ -1,4 +1,5 @@
 from login.SalesforceLogin import SalesforceLogin
+from messages.SuccessMessage import SuccessMessage
 import const
 import driver
 
@@ -18,7 +19,7 @@ class Salesforce:
     }
 
     def __init__(self):
-        print("Salesforceの処理を開始します。")
+        print("[INFO] Salesforceの処理を開始します。")
         self.driver = driver.getDriver()
         self.login()
         
@@ -29,3 +30,5 @@ class Salesforce:
     def logout(self) -> None:
         # ログアウトを実行
         self.driver.get(const.SALESFORCE_LOGOUT_URL)
+        # ログアウト成功メッセージを出力
+        print(SuccessMessage.LOGOUT_SUCCESS)
