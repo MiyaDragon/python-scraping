@@ -9,25 +9,25 @@ class LogMessage:
     def START_PROCESSING(media: str):
         return f"{LogMessage._timestamp()} [INFO] {media}の処理を開始します。"
 
-    @property
-    def END_PROCESSING(self):
-        return f"{self._timestamp()} [INFO] 処理が完了しました。"
+    @staticmethod
+    def END_PROCESSING():
+        return f"{LogMessage._timestamp()} [INFO] 処理が完了しました。"
 
-    @property
-    def ELEMENT_FOUND(self):
-        return f"{self._timestamp()} [INFO] 要素を正常に取得しました。"
+    @staticmethod
+    def ELEMENT_FOUND():
+        return f"{LogMessage._timestamp()} [INFO] 要素を正常に取得しました。"
 
-    @property
-    def ELEMENT_CLICKED(self):
-        return f"{self._timestamp()} [INFO] 要素をクリックしました。"
+    @staticmethod
+    def ELEMENT_CLICKED():
+        return f"{LogMessage._timestamp()} [INFO] 要素をクリックしました。"
 
-    @property
-    def VALUE_SENT(self):
-        return f"{self._timestamp()} [INFO] テキストを送信しました。"
+    @staticmethod
+    def VALUE_SENT():
+        return f"{LogMessage._timestamp()} [INFO] テキストを送信しました。"
 
-    @property
-    def NOT_APPLICANT(self):
-        return f"{self._timestamp()} [INFO] 応募者が存在しません。"
+    @staticmethod
+    def NOT_APPLICANT():
+        return f"{LogMessage._timestamp()} [INFO] 応募者が存在しません。"
 
     @staticmethod
     def with_detail(message: str, detail: str):
