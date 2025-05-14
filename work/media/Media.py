@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod 
 from selenium.webdriver.common.by import By
+from messages.LogMessage import LogMessage
 import driver
 
 class Media(ABC):
     def __init__(self):
-        print(f"[INFO] {self.media_name}の処理を開始します。")
+        print(LogMessage.START_PROCESSING(self.media_name))
         self.driver = driver.getDriver()
         # 暗黙的な待機を設定
         self.driver.implicitly_wait(10)

@@ -17,7 +17,7 @@ class CommonSelenium:
             )
         except TimeoutException:
             msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND, xpath)
-            SlackNotification.send_message(msg, mention="<!channel>")
+            SlackNotification().send_message(msg, mention="<!channel>")
             print(msg)
             return None
 
@@ -46,7 +46,7 @@ class CommonSelenium:
         except TimeoutException:
             msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND, f"{attr}={attr_value}")
             print(msg)
-            SlackNotification.send_message(msg, mention="<!channel>")
+            SlackNotification().send_message(msg, mention="<!channel>")
             return None
 
     @staticmethod
@@ -73,7 +73,7 @@ class CommonSelenium:
             )
         except TimeoutException:
             msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND, xpath)
-            SlackNotification.send_message(msg, mention="<!channel>")
+            SlackNotification().send_message(msg, mention="<!channel>")
             print(msg)
             return None
 

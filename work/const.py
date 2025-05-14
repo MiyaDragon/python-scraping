@@ -5,6 +5,8 @@ import os
 load_dotenv()
 
 ## セールスフォース
+# システム名
+SALESFORCE_SYSTEM_NAME = "salesforce"
 # ログインURL
 SALESFORCE_LOGIN_URL = os.getenv("SALESFORCE_LOGIN_URL")
 # ログインID

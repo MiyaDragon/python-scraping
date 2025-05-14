@@ -27,7 +27,7 @@ class SalesforceJobSeekerRecord(Salesforce):
         except Exception as e:
             msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND_OR_TIMEOUT, e)
             # Slackにエラーメッセージを送信
-            SlackNotification.send_message(msg, mention="<!channel>")
+            SlackNotification().send_message(msg, mention="<!channel>")
             # エラーメッセージを出力
             print(msg)
         finally:

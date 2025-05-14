@@ -1,10 +1,13 @@
 from login.SalesforceLogin import SalesforceLogin
 from messages.SuccessMessage import SuccessMessage
+from messages.LogMessage import LogMessage
 import const
 import driver
 
 class Salesforce:
     """ Salesforceに関するクラス """
+
+    system_name = const.SALESFORCE_SYSTEM_NAME
 
     # ログイン情報
     login_info = {
@@ -19,7 +22,7 @@ class Salesforce:
     }
 
     def __init__(self):
-        print("[INFO] Salesforceの処理を開始します。")
+        print(LogMessage.START_PROCESSING(self.system_name))
         self.driver = driver.getDriver()
         self.login()
         
