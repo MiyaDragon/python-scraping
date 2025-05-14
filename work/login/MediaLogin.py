@@ -22,6 +22,6 @@ class MediaLogin:
         login_btn.click()
 
         # ログイン成功メッセージを出力
-        print(SuccessMessage.LOGIN_SUCCESS)
+        print(SuccessMessage.LOGIN_SUCCESS())
 
         return self.driver

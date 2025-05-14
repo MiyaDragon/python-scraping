@@ -15,4 +15,4 @@ class SlackNotification:
             response = requests.post(const.SLACK_WEBHOOK_URL, json=payload)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            print(ErrorMessage.with_detail(ErrorMessage.SLACK_NOTIFY_FAILED, e))
+            print(ErrorMessage.with_detail(ErrorMessage.SLACK_NOTIFY_FAILED(), e))

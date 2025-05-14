@@ -141,4 +141,4 @@ class SpreadSheet():
         
         # 書き込み完了メッセージ
         # print(f"スプレッドシートに{len(convert_values)}件のデータを書き込みました。")
-        print(SuccessMessage.SPREAD_SHEET_WRITE_SUCCESS)
+        print(SuccessMessage.SPREAD_SHEET_WRITE_SUCCESS())

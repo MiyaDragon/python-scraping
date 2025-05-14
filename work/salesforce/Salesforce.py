@@ -34,4 +34,4 @@ class Salesforce:
         # ログアウトを実行
         self.driver.get(const.SALESFORCE_LOGOUT_URL)
         # ログアウト成功メッセージを出力
-        print(SuccessMessage.LOGOUT_SUCCESS)
+        print(SuccessMessage.LOGOUT_SUCCESS())

@@ -23,9 +23,9 @@ class SalesforceJobSeekerRecord(Salesforce):
                 self.store_staff_data(staff_data)
 
                 # 求職者レコード登録完了メッセージを出力
-                print(SuccessMessage.STORE_JOB_SEEKER_RECORD_SUCCESS)
+                print(SuccessMessage.STORE_JOB_SEEKER_RECORD_SUCCESS())
         except Exception as e:
-            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND_OR_TIMEOUT, e)
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND_OR_TIMEOUT(), e)
             # Slackにエラーメッセージを送信
             SlackNotification().send_message(msg, mention="<!channel>")
             # エラーメッセージを出力
@@ -102,6 +102,49 @@ class SalesforceJobSeekerRecord(Salesforce):
         save_btn = self.driver.find_element(By.XPATH, "//button[@name='SaveEdit']")
         CommonSelenium.target_click(self.driver, save_btn)
         time.sleep(5)
+    
+    # 履歴書登録
+    def update_resume(self, applicant_data: dict) -> None:
+        try:
+            target_element = CommonSelenium.get_element_by_xpath('button', 'aria-label', '検索', self.driver)
+            time.sleep(5)
+            CommonSelenium.target_click(self.driver, target_element)
+            time.sleep(5)
+            input_element = CommonSelenium.get_element_by_xpath('input', 'placeholder', '検索...', self.driver)
+            input_element.send_keys(applicant_data['name'])
+            time.sleep(5)
+            input_element.send_keys(Keys.RETURN)
+            time.sleep(5)
+
+            # 編集ボタンクリック
+            edit_btn = CommonSelenium.get_element_by_xpath('div', 'title', '編集', self.driver)
+            CommonSelenium.target_click(self.driver, edit_btn)
+            time.sleep(5)
+
+            self.input_text('resume__c', applicant_data['resume'])
+            time.sleep(5)
+
+            self.input_text('dutyCareerDocument__c', applicant_data['duty_career_document'])
+            time.sleep(5)
+
+            self.input_text('PCmail__c', '')
+            time.sleep(5)
+
+            # 保存ボタンクリック
+            save_btn = self.driver.find_element(By.XPATH, "//button[@name='SaveEdit']")
+            CommonSelenium.target_click(self.driver, save_btn)
+            time.sleep(5)
+        except Exception as e:
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND_OR_TIMEOUT(), e)
+            # Slackにエラーメッセージを送信
+            SlackNotification().send_message(msg, mention="<!channel>")
+            # エラーメッセージを出力
+            print(msg)
+        finally:
+            # ログアウト
+            self.logout()
+            # WebDriverを終了する
+            self.driver.quit()
 
     # テキストボックスに値を入力
     def input_text(self, name_attr: str, input_data: str) -> None:

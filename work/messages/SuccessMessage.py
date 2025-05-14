@@ -26,10 +26,6 @@ class SuccessMessage:
         return f"{SuccessMessage._timestamp()} [SUCCESS] スプレッドシートへの書き込みが完了しました。"
 
     @staticmethod
-    def SLACK_NOTIFIED():
-        return f"{SuccessMessage._timestamp()} [SUCCESS] Slackへの通知に成功しました。"
-
-    @staticmethod
     def with_detail(message: str, detail: str):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return f"{timestamp} {message} 詳細: {detail}"

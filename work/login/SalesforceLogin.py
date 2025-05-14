@@ -40,6 +40,6 @@ class SalesforceLogin:
         time.sleep(5)
 
         # ログイン成功メッセージを出力
-        print(SuccessMessage.LOGIN_SUCCESS)
+        print(SuccessMessage.LOGIN_SUCCESS())
 
         return self.driver

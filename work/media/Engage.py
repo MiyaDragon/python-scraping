@@ -71,10 +71,10 @@ class Engage(Media):
                 time.sleep(3)
             
             # 応募者情報取得成功メッセージを出力
-            print(SuccessMessage.GET_APPLICANT_DATA_SUCCESS)
+            print(SuccessMessage.GET_APPLICANT_DATA_SUCCESS())
             return applicant_data
         except Exception as e:
-            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND, e)
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND(), e)
             # Slackにエラーメッセージを送信
             SlackNotification().send_message(msg, mention="<!channel>")
             # エラーメッセージを出力
@@ -189,7 +189,7 @@ class Engage(Media):
         # ログアウトを実行
         self.driver.get(const.ENGAGE_LOGOUT_URL)
         # ログアウト成功メッセージを出力
-        print(SuccessMessage.LOGOUT_SUCCESS)
+        print(SuccessMessage.LOGOUT_SUCCESS())
     
     # モーダル削除
     def close_modal(self, target_class_name: str) -> None:
