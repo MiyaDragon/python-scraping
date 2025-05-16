@@ -1,11 +1,12 @@
 from media.Media import Media
 from selenium.webdriver.common.by import By
-import sys
 import time
-import driver
 import const
 from login.MediaLogin import MediaLogin
 from common.CommonSelenium import CommonSelenium
+from messages.ErrorMessage import ErrorMessage
+from messages.SuccessMessage import SuccessMessage
+from notification.SlackNotification import SlackNotification
 
 class Mynavi(Media):
     """ 求人媒体「マイナビ転職」に関するクラス """
@@ -38,30 +39,28 @@ class Mynavi(Media):
     
     # 応募者データ取得
     def get_applicant_data(self) -> dict:
-        # 「応募管理」タブをクリック
-        btn_element = self.driver.find_element(By.LINK_TEXT, '応募管理')
-        CommonSelenium.target_click(self.driver, btn_element)
-        time.sleep(5)
+        try:
+            # 「応募管理」タブをクリック
+            btn_element = self.driver.find_element(By.LINK_TEXT, '応募管理')
+            CommonSelenium.target_click(self.driver, btn_element)
+            time.sleep(5)
 
-        # 新しいウィンドウにフォーカスを移動する
-        handles = self.driver.window_handles
-        new_window_handle = handles[-1]  # 最後に開かれたウィンドウのハンドルを取得
-        # 新しいウィンドウに切り替える
-        self.driver.switch_to.window(new_window_handle)
+            # 新しいウィンドウにフォーカスを移動する
+            handles = self.driver.window_handles
+            new_window_handle = handles[-1]  # 最後に開かれたウィンドウのハンドルを取得
+            # 新しいウィンドウに切り替える
+            self.driver.switch_to.window(new_window_handle)
 
-        # 応募者一覧を取得
-        applicant_elements = CommonSelenium.get_elements('em', '書類選考', self.driver)
-        # print(len(applicant_elements))
-        # time.sleep(100)
-        # applicant_elements = CommonSelenium.get_elements_by_attr('tag', 'article', self.driver)
+            applicant_data = {}
 
-        applicant_data = {}
+            # 応募者一覧を取得
+            applicant_elements = CommonSelenium.get_elements('em', '書類選考', self.driver)
 
-        # 応募者が存在する場合
-        if applicant_elements:
+            # 応募者が存在しない場合、早期return
+            if len(applicant_elements) == 0:
+                return applicant_data
+
             for index, applicant_element in enumerate(applicant_elements):
-                # if (index == 3):
-                #     break
                 # 「応募者」をクリック
                 CommonSelenium.target_click(self.driver, applicant_element)
                 time.sleep(5)
@@ -77,6 +76,8 @@ class Mynavi(Media):
                 applicant_info = self.get_applicant_info()
                 # 応募者情報を辞書に格納
                 applicant_data[index] = applicant_info
+                # 選考ステップ変更
+                self.change_selection_step()
 
                 # ウィンドウを閉じる
                 self.driver.close()
@@ -84,18 +85,26 @@ class Mynavi(Media):
                 self.driver.switch_to.window(handles[1])
 
                 time.sleep(3)
-        else:
-            print('応募者は存在しません。')
+
+            # 応募者情報取得成功メッセージを出力
+            print(SuccessMessage.GET_APPLICANT_DATA_SUCCESS())
+            return applicant_data
+        except Exception as e:
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND(), e)
+            # Slackにエラーメッセージを送信
+            SlackNotification().send_message(msg, mention="<!channel>")
+            # エラーメッセージを出力
+            print(msg)
+        finally:
+            # ログアウト
             self.logout()
-            sys.exit()
-        
-        return applicant_data
-    
+            # WebDriverを終了する
+            self.driver.quit()
+            
     # 応募者情報取得
     def get_applicant_info(self) -> dict:
         
         applicant_data = {}
-        entry_history_data = {}
 
         ## 名前
         name_element = CommonSelenium.get_element_by_attr('xpath', '//*[@id="scrollContainer"]/main/div/div/main/header[1]/div[1]/h1/div/a', self.driver)
@@ -109,6 +118,10 @@ class Mynavi(Media):
         entry_date_element = CommonSelenium.get_element_by_attr('xpath', '//*[@id="visibleContainer"]/div[1]/article[1]/label/div/time', self.driver)
         entry_date = entry_date_element.text.replace('：', ' ')
         applicant_data['entry_date'] = CommonSelenium.get_text_split_single_unit(entry_date, None, 1)
+        ## 住所
+        target_element = CommonSelenium.get_element_by_xpath('dt', 'class', 'icon-lst-hd-address', self.driver)
+        address_element = CommonSelenium.get_next_element(target_element)
+        applicant_data['address'] = CommonSelenium.get_text_split_single_unit(address_element.text, '\n', 1)
         ## メール
         email_element = CommonSelenium.get_element_by_attr('xpath', '//*[@id="profile_ss"]/div[2]/dl[2]/dd[3]', self.driver)
         applicant_data['email'] = email_element.text
@@ -128,17 +141,36 @@ class Mynavi(Media):
         applicant_data['prefecture'] = prefecture
         ## 媒体名
         applicant_data['media_name'] = const.MYNAVI_MEDIA_NAME
-        # applicant_data['media_name'] = None
-        # entry_history_data['media_name'] = const.MYNAVI_MEDIA_NAME
-        # applicant_data['entry_history'] = entry_history_data
         ## 在籍状況
         applicant_data['enrollment_status'] = '不明'
 
         time.sleep(3)
 
         return applicant_data
+
+    # 選考ステップ変更
+    def change_selection_step(self) -> None:
+        # 「合否・選考ステップを変更」ボタンをクリック
+        btn_element = CommonSelenium.get_element_by_xpath('button', 'title', 'このエントリーの合否や選考ステップを変更します', self.driver)
+        time.sleep(3)
+        CommonSelenium.target_click(self.driver, btn_element)
+        time.sleep(3)
+
+        # 「一次面接」ラベルをクリック
+        label_element = CommonSelenium.get_element('label', '一次面接', self.driver)
+        time.sleep(3)
+        CommonSelenium.target_click(self.driver, label_element)
+        time.sleep(3)
+
+        # 「OK」ボタンをクリック
+        btn_element = CommonSelenium.get_element('span', 'OK', self.driver)
+        time.sleep(3)
+        CommonSelenium.target_click(self.driver, btn_element)
+        time.sleep(3)
     
     # ログアウト
     def logout(self) -> None:
         # ログアウトを実行
         self.driver.get(const.MYNAVI_LOGOUT_URL)
+        # ログアウト成功メッセージを出力
+        print(SuccessMessage.LOGOUT_SUCCESS())

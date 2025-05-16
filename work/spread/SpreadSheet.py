@@ -34,7 +34,7 @@ class SpreadSheet():
 
     # 書類選考の合否を判定
     def isDocumentScreeningPassed(self, age: int, name: str) -> tuple:
-        age_limit = int(const.SPREAD_SHEET_AGE_LIMIT)
+        age_limit = int(const.SPREAD_SHEET_KPI_AGE_LIMIT)
         if age <= age_limit:
             if self.check_name_type(name) == "漢字氏名":
                 return '○', ''
@@ -84,7 +84,7 @@ class SpreadSheet():
             full_name = self.get_full_name(applicant_data[data]['last_name'], applicant_data[data]['first_name'])
             value.append(full_name)
             # ステータス
-            value.append(const.SPREAD_SHEET_DEFAULT_STATUS)
+            value.append(const.SPREAD_SHEET_KPI_DEFAULT_STATUS)
             # 年齢
             value.append(age)
             # 性別
@@ -121,10 +121,10 @@ class SpreadSheet():
         client = gspread.authorize(credentials)
 
         # スプレッドシートを開く
-        spreadsheet = client.open_by_key(const.SPREAD_SHEET_ID)
+        spreadsheet = client.open_by_key(const.SPREAD_SHEET_KPI_ID)
 
         # ワークシートの選択
-        sheet = spreadsheet.worksheet(const.SPREAD_SHEET_WORKSHEET_NAME)
+        sheet = spreadsheet.worksheet(const.SPREAD_SHEET_KPI_WORKSHEET_NAME)
 
         # C列の最終行の次の行インデックスを取得
         next_row = len(sheet.col_values(3)) + 1  # 3はC列

@@ -6,5 +6,11 @@ touch /var/log/cron.log
 # cron起動 ＋ ログ出力
 service cron start
 
-# 永続的にログを監視（コンテナ維持のため）
-tail -f /var/log/cron.log
+# Flaskサーバーをバックグラウンドで起動
+python /work/app.py &
+
+# URLを更新するスクリプトをバックグラウンドで起動
+python /work/update_ngrok.py
+
+# コンテナを維持するために無限ループ
+tail -f /dev/null

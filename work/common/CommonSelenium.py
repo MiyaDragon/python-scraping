@@ -16,7 +16,7 @@ class CommonSelenium:
                 EC.presence_of_element_located((By.XPATH, xpath))
             )
         except TimeoutException:
-            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND, xpath)
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND(), xpath)
             SlackNotification().send_message(msg, mention="<!channel>")
             print(msg)
             return None
@@ -37,14 +37,14 @@ class CommonSelenium:
         }
         by = by_map.get(attr)
         if not by:
-            print(ErrorMessage.INVALID_ATTRIBUTE)
+            print(ErrorMessage.INVALID_ATTRIBUTE())
             return None
         try:
             return WebDriverWait(driver, CommonSelenium.TIMEOUT).until(
                 EC.presence_of_element_located((by, attr_value))
             )
         except TimeoutException:
-            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND, f"{attr}={attr_value}")
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND(), f"{attr}={attr_value}")
             print(msg)
             SlackNotification().send_message(msg, mention="<!channel>")
             return None
@@ -60,7 +60,7 @@ class CommonSelenium:
         }
         by = by_map.get(attr)
         if not by:
-            print(ErrorMessage.INVALID_ATTRIBUTE)
+            print(ErrorMessage.INVALID_ATTRIBUTE())
             return []
         return driver.find_elements(by, attr_value)
 
@@ -72,7 +72,7 @@ class CommonSelenium:
                 EC.presence_of_element_located((By.XPATH, xpath))
             )
         except TimeoutException:
-            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND, xpath)
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND(), xpath)
             SlackNotification().send_message(msg, mention="<!channel>")
             print(msg)
             return None

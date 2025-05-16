@@ -106,13 +106,16 @@ class SalesforceJobSeekerRecord(Salesforce):
     # 履歴書登録
     def update_resume(self, applicant_data: dict) -> None:
         try:
+            # 検索ボタンクリック
             target_element = CommonSelenium.get_element_by_xpath('button', 'aria-label', '検索', self.driver)
             time.sleep(5)
             CommonSelenium.target_click(self.driver, target_element)
             time.sleep(5)
+            # 検索ボックスに名前を入力
             input_element = CommonSelenium.get_element_by_xpath('input', 'placeholder', '検索...', self.driver)
             input_element.send_keys(applicant_data['name'])
             time.sleep(5)
+            # 検索ボックスにEnterキーを送信
             input_element.send_keys(Keys.RETURN)
             time.sleep(5)
 
@@ -121,12 +124,17 @@ class SalesforceJobSeekerRecord(Salesforce):
             CommonSelenium.target_click(self.driver, edit_btn)
             time.sleep(5)
 
-            self.input_text('resume__c', applicant_data['resume'])
-            time.sleep(5)
+            # 履歴書
+            if applicant_data['resume'] is not None:
+                self.input_text('resume__c', applicant_data['resume'])
+                time.sleep(5)
 
-            self.input_text('dutyCareerDocument__c', applicant_data['duty_career_document'])
-            time.sleep(5)
+            # 職務経歴書
+            if applicant_data['duty_career_document'] is not None:
+                self.input_text('dutyCareerDocument__c', applicant_data['duty_career_document'])
+                time.sleep(5)
 
+            # 登録エラー防止のために空の値を入力
             self.input_text('PCmail__c', '')
             time.sleep(5)
 

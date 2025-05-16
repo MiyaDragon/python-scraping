@@ -51,14 +51,20 @@ MYNAVI_LOGOUT_URL = os.getenv("MYNAVI_LOGOUT_URL")
 MYNAVI_MEDIA_NAME = "マイナビ"
 
 ## スプレッドシート
+# スプレッドシート：KPI管理表
 # ステータス
-SPREAD_SHEET_DEFAULT_STATUS = "01_応募済み"
-# スプレッドシートID
-SPREAD_SHEET_ID = os.getenv("SPREAD_SHEET_ID")
-# スプレッドシートワークシート名
-SPREAD_SHEET_WORKSHEET_NAME="【採用】候補者管理"
+SPREAD_SHEET_KPI_DEFAULT_STATUS = "01_応募済み"
+# ID
+SPREAD_SHEET_KPI_ID = os.getenv("SPREAD_SHEET_KPI_ID")
+# ワークシート名
+SPREAD_SHEET_KPI_WORKSHEET_NAME = "【採用】候補者管理"
 # 選考基準：年齢
-SPREAD_SHEET_AGE_LIMIT = os.getenv("SPREAD_SHEET_AGE_LIMIT")
+SPREAD_SHEET_KPI_AGE_LIMIT = os.getenv("SPREAD_SHEET_KPI_AGE_LIMIT")
+# スプレッドシート：エントリーフォーム
+# ID
+SPREAD_SHEET_ENTRY_FORM_ID = os.getenv("SPREAD_SHEET_ENTRY_FORM_ID")
+# ワークシート名
+SPREAD_SHEET_ENTRY_FORM_WORKSHEET_NAME = "フォームの回答 1"
 
 ## Slack
 # Slack Webhook URL
