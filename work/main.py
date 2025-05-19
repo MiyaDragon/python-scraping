@@ -14,7 +14,7 @@ def collect_applicant_data(media_classes):
     return merged_data
 
 # 媒体をここで定義するだけでOK
-media_classes = [Engage]
+media_classes = [Engage, Mynavi]
 
 applicant_data = collect_applicant_data(media_classes)
 

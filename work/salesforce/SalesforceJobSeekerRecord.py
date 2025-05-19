@@ -133,6 +133,21 @@ class SalesforceJobSeekerRecord(Salesforce):
             if applicant_data['duty_career_document'] is not None:
                 self.input_text('dutyCareerDocument__c', applicant_data['duty_career_document'])
                 time.sleep(5)
+            
+            # フェーズ
+            phase_element = CommonSelenium.get_element('label', 'フェーズ', self.driver)
+            phase_box_id_name = phase_element.get_attribute('for')
+            target_element = CommonSelenium.get_element_by_xpath('button', 'id', phase_box_id_name, self.driver)
+            time.sleep(5)
+            CommonSelenium.target_click(self.driver, target_element)
+            time.sleep(5)
+            id_number = phase_box_id_name.split('-')[-1]
+            phase_number = '2'
+            phase_id_name = f'{phase_box_id_name}-{phase_number}-{id_number}'
+            phase_element = CommonSelenium.get_element_by_xpath('lightning-base-combobox-item', 'id', phase_id_name, self.driver)
+            time.sleep(5)
+            CommonSelenium.target_click(self.driver, phase_element)
+            time.sleep(5)
 
             # 登録エラー防止のために空の値を入力
             self.input_text('PCmail__c', '')
@@ -157,5 +172,7 @@ class SalesforceJobSeekerRecord(Salesforce):
     # テキストボックスに値を入力
     def input_text(self, name_attr: str, input_data: str) -> None:
         input_element = self.driver.find_element(By.XPATH, f"//input[@name='{name_attr}']")
+        input_element.clear()
+        time.sleep(1)
         input_element.send_keys(input_data)
         time.sleep(2)

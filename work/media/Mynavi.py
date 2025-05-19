@@ -61,6 +61,16 @@ class Mynavi(Media):
                 return applicant_data
 
             for index, applicant_element in enumerate(applicant_elements):
+                # タグの要素を取得
+                target_element = CommonSelenium.get_parent_element(applicant_element)
+                parent_element = CommonSelenium.get_next_element(target_element)
+                tag_elements = parent_element.find_elements(By.CSS_SELECTOR, "dd > span")
+
+                # 取込済の応募者はスキップ
+                if tag_elements:
+                    time.sleep(1)
+                    continue
+
                 # 「応募者」をクリック
                 CommonSelenium.target_click(self.driver, applicant_element)
                 time.sleep(5)
@@ -76,8 +86,10 @@ class Mynavi(Media):
                 applicant_info = self.get_applicant_info()
                 # 応募者情報を辞書に格納
                 applicant_data[index] = applicant_info
-                # 選考ステップ変更
-                self.change_selection_step()
+                # # 選考ステップ変更
+                # self.change_selection_step()
+                # 「取込済」タグを追加
+                self.add_imported_tag()
 
                 # ウィンドウを閉じる
                 self.driver.close()
@@ -148,16 +160,36 @@ class Mynavi(Media):
 
         return applicant_data
 
-    # 選考ステップ変更
-    def change_selection_step(self) -> None:
-        # 「合否・選考ステップを変更」ボタンをクリック
-        btn_element = CommonSelenium.get_element_by_xpath('button', 'title', 'このエントリーの合否や選考ステップを変更します', self.driver)
+    # # 選考ステップ変更
+    # def change_selection_step(self) -> None:
+    #     # 「合否・選考ステップを変更」ボタンをクリック
+    #     btn_element = CommonSelenium.get_element_by_xpath('button', 'title', 'このエントリーの合否や選考ステップを変更します', self.driver)
+    #     time.sleep(3)
+    #     CommonSelenium.target_click(self.driver, btn_element)
+    #     time.sleep(3)
+
+    #     # 「一次面接」ラベルをクリック
+    #     label_element = CommonSelenium.get_element('label', '一次面接', self.driver)
+    #     time.sleep(3)
+    #     CommonSelenium.target_click(self.driver, label_element)
+    #     time.sleep(3)
+
+    #     # 「OK」ボタンをクリック
+    #     btn_element = CommonSelenium.get_element('span', 'OK', self.driver)
+    #     time.sleep(3)
+    #     CommonSelenium.target_click(self.driver, btn_element)
+    #     time.sleep(3)
+
+    # 「取込済」タグを追加
+    def add_imported_tag(self) -> None:
+        # 「タグ」ボタンをクリック
+        btn_element = CommonSelenium.get_element_by_xpath('button', 'title', 'このエントリーのタグを編集します', self.driver)
         time.sleep(3)
         CommonSelenium.target_click(self.driver, btn_element)
         time.sleep(3)
 
-        # 「一次面接」ラベルをクリック
-        label_element = CommonSelenium.get_element('label', '一次面接', self.driver)
+        # 「取込済」タグをクリック
+        label_element = CommonSelenium.get_element('span', '取込済', self.driver)
         time.sleep(3)
         CommonSelenium.target_click(self.driver, label_element)
         time.sleep(3)
@@ -166,6 +198,12 @@ class Mynavi(Media):
         btn_element = CommonSelenium.get_element('span', 'OK', self.driver)
         time.sleep(3)
         CommonSelenium.target_click(self.driver, btn_element)
+        time.sleep(3)
+
+        # 「OK」ボタンをクリック
+        btn_elements = CommonSelenium.get_elements('span', 'OK', self.driver)
+        time.sleep(3)
+        CommonSelenium.target_click(self.driver, btn_elements[1])
         time.sleep(3)
     
     # ログアウト

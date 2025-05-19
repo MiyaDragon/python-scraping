@@ -81,6 +81,10 @@ class CommonSelenium:
     def get_elements_by_xpath(tag: str, attr: str, attr_value: str, driver):
         xpath = f"//{tag}[@{attr}='{attr_value}']"
         return driver.find_elements(By.XPATH, xpath)
+    
+    @staticmethod
+    def get_parent_element(target_element):
+        return target_element.find_element(By.XPATH, '..')
 
     @staticmethod
     def get_next_element(target_element):
