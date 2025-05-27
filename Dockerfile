@@ -17,6 +17,10 @@ WORKDIR /work
 COPY requirements.txt ./
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
+COPY cronjob /etc/cron.d/cronjob
+RUN chmod 0600 /etc/cron.d/cronjob && \
+    crontab /etc/cron.d/cronjob
+
 # 実行スクリプトをコピー
 COPY docker/start.sh /start.sh
 RUN chmod +x /start.sh
