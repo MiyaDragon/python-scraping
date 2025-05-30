@@ -106,22 +106,32 @@ class SalesforceJobSeekerRecord(Salesforce):
     # 履歴書登録
     def update_resume(self, applicant_data: dict) -> None:
         try:
-            # 検索ボタンクリック
-            target_element = CommonSelenium.get_element_by_xpath('button', 'aria-label', '検索', self.driver)
-            time.sleep(5)
-            CommonSelenium.target_click(self.driver, target_element)
-            time.sleep(5)
-            # 検索ボックスに名前を入力
-            input_element = CommonSelenium.get_element_by_xpath('input', 'placeholder', '検索...', self.driver)
-            input_element.send_keys(applicant_data['name'])
-            time.sleep(5)
-            # 検索ボックスにEnterキーを送信
-            input_element.send_keys(Keys.RETURN)
-            time.sleep(5)
+            # 検索を実行（名前検索）
+            label_name = '検索'
+            self.search(label_name, applicant_data['name'])
+
+            # 編集ボタンを取得
+            edit_btns = CommonSelenium.get_elements_by_xpath('div', 'title', '編集', self.driver)
+            # 編集ボタンが存在しない場合は、検索を実行してから編集ボタンを取得
+            if not edit_btns:
+                # 検索を実行（名前検索）
+                label_name = f"検索: {applicant_data['name']}"
+                self.search(label_name, applicant_data['tel'])
+
+                # 編集ボタンを取得
+                edit_btns = CommonSelenium.get_elements_by_xpath('div', 'title', '編集', self.driver)
+
+                if not edit_btns:
+                    msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND_OR_TIMEOUT(), "編集ボタンが見つかりませんでした。")
+                    # Slackにエラーメッセージを送信
+                    SlackNotification().send_message(msg, mention="<!channel>")
+                    # エラーメッセージを出力
+                    print(msg)
+                    # 処理を終了
+                    return
 
             # 編集ボタンクリック
-            edit_btn = CommonSelenium.get_element_by_xpath('div', 'title', '編集', self.driver)
-            CommonSelenium.target_click(self.driver, edit_btn)
+            CommonSelenium.target_click(self.driver, edit_btns[0])
             time.sleep(5)
 
             # 履歴書
@@ -133,21 +143,6 @@ class SalesforceJobSeekerRecord(Salesforce):
             if applicant_data['duty_career_document'] is not None:
                 self.input_text('dutyCareerDocument__c', applicant_data['duty_career_document'])
                 time.sleep(5)
-            
-            # フェーズ
-            phase_element = CommonSelenium.get_element('label', 'フェーズ', self.driver)
-            phase_box_id_name = phase_element.get_attribute('for')
-            target_element = CommonSelenium.get_element_by_xpath('button', 'id', phase_box_id_name, self.driver)
-            time.sleep(5)
-            CommonSelenium.target_click(self.driver, target_element)
-            time.sleep(5)
-            id_number = phase_box_id_name.split('-')[-1]
-            phase_number = '2'
-            phase_id_name = f'{phase_box_id_name}-{phase_number}-{id_number}'
-            phase_element = CommonSelenium.get_element_by_xpath('lightning-base-combobox-item', 'id', phase_id_name, self.driver)
-            time.sleep(5)
-            CommonSelenium.target_click(self.driver, phase_element)
-            time.sleep(5)
 
             # 登録エラー防止のために空の値を入力
             self.input_text('PCmail__c', '')
@@ -176,3 +171,28 @@ class SalesforceJobSeekerRecord(Salesforce):
         time.sleep(1)
         input_element.send_keys(input_data)
         time.sleep(2)
+
+    # 検索
+    def search(self, label_name: str, search_value: str) -> None:
+        try:
+            # 検索ボタンクリック
+            target_element = CommonSelenium.get_element_by_xpath('button', 'aria-label', label_name, self.driver)
+            time.sleep(5)
+            CommonSelenium.target_click(self.driver, target_element)
+            time.sleep(5)
+
+            # 検索ボックスに検索値を入力
+            input_element = CommonSelenium.get_element_by_xpath('input', 'placeholder', '検索...', self.driver)
+            input_element.clear()
+            input_element.send_keys(search_value)
+            time.sleep(5)
+
+            # 検索ボックスにEnterキーを送信
+            input_element.send_keys(Keys.RETURN)
+            time.sleep(5)
+        except Exception as e:
+            msg = ErrorMessage.with_detail(ErrorMessage.ELEMENT_NOT_FOUND_OR_TIMEOUT(), e)
+            # Slackにエラーメッセージを送信
+            SlackNotification().send_message(msg, mention="<!channel>")
+            # エラーメッセージを出力
+            print(msg)
